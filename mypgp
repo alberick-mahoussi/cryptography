@@ -1,0 +1,91 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2023
+## B-CNA-500-PAR-5-1-cryptography-alberick.mahoussi
+## File description:
+## mypgp
+##
+
+import sys
+from xor_cipher import xor_cipher
+from error_handling import handle_error, print_usage
+from aes_cipher import aes_cipher
+import rsa_keygen
+from rsa_cipher import rsa_cipher_func
+
+def rsa_generate_keys(p, q):
+    pass
+
+def rsa_cipher(message, key, operation):
+    pass
+
+def pgp_cipher(public_key):
+    pass
+
+def main():
+    if len(sys.argv) < 2:
+        handle_error("Not enough arguments")
+
+    algorithm = sys.argv[1]
+
+    if algorithm == "-h":
+        print_usage()
+        sys.exit(0)
+
+    if algorithm not in ["-xor", "-aes", "-rsa", "-pgp"]:
+        handle_error("Invalid algorithm")
+
+    if len(sys.argv) < 3:
+        handle_error("Missing operation")
+
+    operation = sys.argv[2]
+    if operation not in ["-c", "-d", "-g"]:
+        handle_error("Invalid operation")
+
+    message = ""
+
+    if not sys.stdin.isatty():
+        for line in sys.stdin:
+            message += line.strip()
+
+    if algorithm in ["-xor", "-aes"]:
+        block_mode = False
+        if "-b" in sys.argv:
+            block_mode = True
+            key_index = sys.argv.index("-b") + 1
+        else:
+            key_index = 3
+        if len(sys.argv) < key_index + 1:
+            handle_error("Insufficient arguments for key")
+        key = sys.argv[key_index]
+
+        if block_mode == True and len(message) != len(key):
+            handle_error("Message and key must be of the same size")
+        if algorithm == "-xor":
+            xor_cipher(message, key, operation, block_mode)
+        elif algorithm == "-aes":
+            aes_cipher(message, key, operation, block_mode)
+
+    elif algorithm == "-rsa":
+        if operation == "-g":
+            if len(sys.argv) != 5:
+                handle_error("Incorrect number of arguments for RSA key generation")
+            p = sys.argv[3]
+            q = sys.argv[4]
+            rsa_keygen.rsa_generate_keys(p, q)
+        else:
+            if len(sys.argv) != 4:
+                handle_error("Incorrect number of arguments for RSA encryption")
+            # message = input("Enter the message: ").strip()
+            key = sys.argv[3]
+            rsa_cipher_func(message, key, operation)
+
+    elif algorithm == "-pgp":
+        if len(sys.argv) != 4:
+            handle_error("Incorrect number of arguments for PGP encryption")
+        public_key = sys.argv[3]
+
+        # pgp_cipher(public_key)
+
+if __name__ == "__main__":
+    main()

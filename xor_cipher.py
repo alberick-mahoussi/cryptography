@@ -1,0 +1,42 @@
+#!/usr/bin/python3
+##
+## EPITECH PROJECT, 2023
+## B-CNA-500-PAR-5-1-cryptography-alberick.mahoussi
+## File description:
+## mypgp
+##
+
+from error_handling import handle_error
+
+def xor_cipher_message(message, key):
+    message_bytes = bytes.fromhex(message)
+    key_bytes = bytes.fromhex(key)
+    
+    repeated_key = bytearray()
+    while len(repeated_key) < len(message_bytes):
+        repeated_key.extend(key_bytes)
+    adjusted_key = repeated_key[:len(message_bytes)]
+    
+    encrypted_bytes = bytes([message_bytes[i] ^ adjusted_key[i] for i in range(len(message_bytes))])
+    return encrypted_bytes.hex()
+
+def xor_decrypt(encrypted_hex, key):
+    encrypted_bytes = bytes.fromhex(encrypted_hex)
+    key_bytes = bytes.fromhex(key)
+    
+    repeated_key = bytearray()
+    while len(repeated_key) < len(encrypted_bytes):
+        repeated_key.extend(key_bytes)
+    adjusted_key = repeated_key[:len(encrypted_bytes)]
+    
+    decrypted_bytes = bytes([encrypted_bytes[i] ^ adjusted_key[i] for i in range(len(encrypted_bytes))])
+    return decrypted_bytes.hex()
+
+def xor_cipher(message, key, operation, block_mode):
+    if operation == "-c":
+        print(xor_cipher_message(message, key))
+    elif operation == "-d":
+        print(xor_decrypt(message, key))
+    else:
+        handle_error("Invalid XOR operation")
+    pass
